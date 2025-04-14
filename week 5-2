@@ -1,0 +1,135 @@
+#include <GL/glut.h>
+#include <stdio.h>
+#include <iostream>
+#include <cmath>;
+#define GL_PI 3.1415f
+// 정면 렌더링
+void RenderScene(void) {
+	//std::cout << "Render Scene" << std::endl;
+	GLfloat x, y, z, angle;
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(0.0f, 1.0f, 0.0f);
+
+	glPushMatrix();
+	glRotatef(45, 1.0f, 0.0f, 0.0f);
+	glRotatef(45, 0.0f, 1.0f, 0.0f);
+
+	//// 첫 점
+	//glPointSize(3.0f);
+	//glBegin(GL_POINTS);
+	//glColor3f(0.0f, 1.0f, 0.0f);
+	//glVertex3f(50.0f * cos(0.0f), 50.0f * sin(0.0f), -50.0f);
+	//glEnd();
+
+	//// 나머지 점들
+	//glPointSize(3.0f);
+	//glBegin(GL_POINTS);
+	//z = -49.6f;
+	//for (angle = 0.1f; angle <= (6.0 * GL_PI); angle += 0.1f) {
+	//	glColor3f(1.0f, 0.0f, 0.0f);
+	//	x = 50.0f * cos(angle);
+	//	y = 50.0f * sin(angle);
+	//	glVertex3f(x, y, z);
+	//	z += 0.4f;
+	//}
+	//glEnd();
+
+	// 첫 점
+	//glPointSize(3.0f);
+	//glBegin(GL_POINTS);
+	//glColor3f(0.0f, 1.0f, 0.0f);
+	//glVertex3f(50.0f * cos(0.0f), 50.0f * sin(0.0f), -50.0f);
+	//glEnd();
+	GLfloat pointSize = 1.0f;
+	// 나머지 점들
+	//glPointSize(3.0f);
+
+	z = -49.6f;
+	for (angle = 0.1f; angle <= (6.0 * GL_PI); angle += 0.1f) {
+		x = 50.0f * cos(angle);
+		y = 50.0f * sin(angle);
+
+		GLfloat halfSize = 2.0f;  // 정사각형의 반 크기
+		GLfloat step = 0.2f;      // 점 간 간격
+
+		glColor3f(1.0f, 0.0f, 0.0f);
+
+		// 아래 변
+		for (GLfloat dx = -halfSize; dx <= halfSize; dx += step) {
+			glBegin(GL_POINTS);
+			glVertex3f(x + dx, y - halfSize, z);
+			glEnd();
+		}
+
+		// 위쪽 변
+		for (GLfloat dx = -halfSize; dx <= halfSize; dx += step) {
+			glBegin(GL_POINTS);
+			glVertex3f(x + dx, y + halfSize, z);
+			glEnd();
+		}
+
+		// 왼쪽 변
+		for (GLfloat dy = -halfSize; dy <= halfSize; dy += step) {
+			glBegin(GL_POINTS);
+			glVertex3f(x - halfSize, y + dy, z);
+			glEnd();
+		}
+
+		// 오른쪽 변
+		for (GLfloat dy = -halfSize; dy <= halfSize; dy += step) {
+			glBegin(GL_POINTS);
+			glVertex3f(x + halfSize, y + dy, z);
+			glEnd();
+		}
+
+		z += 0.4f;
+	}
+
+
+
+	glPopMatrix();
+	glutSwapBuffers();
+}
+
+void SetupRC(void) {
+	std::cout << "SetupRC" << std::endl;
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+void ChangeSize(GLsizei w, GLsizei h) {
+	std::cout << "w = " << w << " " << " h = " << h << std::endl;
+	std::cout << "ChangeSize" << std::endl;
+
+	GLint wSize = 1;
+	GLfloat aspectRatio;
+
+	if (h == 0) {
+		h = 1;
+	}
+	glViewport(0, 0, w, h);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	// 여기에 작성
+	aspectRatio = (GLfloat)w / (GLfloat)h;
+	if (w <= h)
+		glOrtho(-100, 100, -100 / aspectRatio, 100 / aspectRatio, -500, 500); // 세로가 더 기니까 세로를 늘려서 사각형의 비율을 유지
+	else
+		glOrtho(-100 * aspectRatio, 100 * aspectRatio, -100, 100, -500, 500); // 가로가 더 기니까 가로 보는 시야를 늘려서? 사각형의 비율을 유지
+	// 여기에 작성
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+}
+
+int main(int argc, char** argv) {
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	glutInitWindowSize(500, 500);
+	glutInitWindowPosition(400, 400);
+	glutCreateWindow("simple");
+
+	SetupRC();
+	glutDisplayFunc(RenderScene);
+	glutReshapeFunc(ChangeSize);
+	glutMainLoop();
+}
