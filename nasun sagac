@@ -1,0 +1,92 @@
+#include <GL/glut.h>
+#include <stdio.h>
+#include <iostream>
+#include <cmath>;
+#define GL_PI 3.1415f
+float angle = 0.0f;
+
+void RenderScene(void) {
+    std::cout << "Render Scene" << std::endl;
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+
+    glPushMatrix();
+    glRotatef(45, 1.0f, 0.0f, 0.0f);  // 기존 회전 유지
+    glRotatef(45, 0.0f, 1.0f, 0.0f);
+
+    float z = 0.0f;
+    float size = 2.0f;
+
+    for (float i = 0.0f; i <= 6.0f * GL_PI; i += 0.3f) {
+        float x = cos(i) * 50;
+        float y = sin(i) * 50;
+
+        // 색상 변화를 준다
+        float r = (sin(i) + 1.0f) / 2.0f;
+        float g = (cos(i) + 1.0f) / 2.0f;
+        float b = (sin(i * 0.5f) + 1.0f) / 2.0f;
+        glColor3f(r, g, b);
+
+        // 비어 있는 사각형 (선으로만 그림)
+        glBegin(GL_LINE_LOOP);
+        glVertex3f(x - size, y - size, z);
+        glVertex3f(x + size, y - size, z);
+        glVertex3f(x + size, y + size, z);
+        glVertex3f(x - size, y + size, z);
+        glEnd();
+
+        size += 0.3f; // 사각형 점점 커짐
+        z += 0.5f;    // 나선 모양을 위해 z 증가
+    }
+
+    glPopMatrix();
+    glutSwapBuffers();
+}
+
+
+void SetupRC() {
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // 검정 배경
+    glEnable(GL_DEPTH_TEST);
+}
+
+void ChangeSize(GLsizei w, GLsizei h)
+{
+    std::cout << "w = " << w << " " << " h = " << h << std::endl;
+    std::cout << "ChangeSize" << std::endl;
+
+    GLint wSize = 100;
+    GLfloat aspectRatio;
+
+    if (h == 0)
+    {
+        h = 1;
+    }
+    glViewport(0, 0, w, h);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    // 여기에 작성
+    aspectRatio = (GLfloat)w / (GLfloat)h;
+    if (w <= h)
+        glOrtho(-100, 100, -100 / aspectRatio, 100 / aspectRatio, -500, 500); // 세로가 더 기니까 세로를 늘려서 사각형의 비율을 유지
+    else
+        glOrtho(-100 * aspectRatio, 100 * aspectRatio, -100, 100, -500, 500); // 가로가 더 기니까 가로 보는 시야를 늘려서? 사각형의 비율을 유지
+    // 여기에 작성
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+int main(int argc, char** argv)
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("simple");
+
+    SetupRC();
+    glutDisplayFunc(RenderScene);
+    glutReshapeFunc(ChangeSize);
+    glutMainLoop();
+}
