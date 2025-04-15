@@ -1,0 +1,73 @@
+#include <GL/glut.h>
+#include <stdio.h>
+#include <iostream>
+#include <cmath>;
+#define GL_PI 3.1415f
+// 정면 렌더링
+void RenderScene(void) {
+	//std::cout << "Render Scene" << std::endl;
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glPushMatrix();
+	GLfloat x, y;
+	GLfloat curSize = 0.0f;
+	GLfloat sizes[2];
+	glGetFloatv(GL_LINE_WIDTH_RANGE, sizes);
+	curSize = sizes[0];
+	for (y = -90.0f; y <= 90.0f; y += 20.0f)
+	{
+		glLineWidth(curSize);
+		glBegin(GL_LINES);
+			glVertex2f(-80.0f, y);
+			glVertex2f(80.0f, y);
+		glEnd();
+		curSize += 1.0f;
+	}
+	glPopMatrix();
+	glutSwapBuffers();
+	glEnd();
+}
+
+
+void SetupRC(void) {
+	std::cout << "SetupRC" << std::endl;
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+void ChangeSize(GLsizei w, GLsizei h) {
+	std::cout << "w = " << w << " " << " h = " << h << std::endl;
+	std::cout << "ChangeSize" << std::endl;
+
+	GLint wSize = 1;
+	GLfloat aspectRatio;
+
+	if (h == 0) {
+		h = 1;
+	}
+	glViewport(0, 0, w, h);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	// 여기에 작성
+	aspectRatio = (GLfloat)w / (GLfloat)h;
+	if (w <= h)
+		glOrtho(-100, 100, -100 / aspectRatio, 100 / aspectRatio, -500, 500); // 세로가 더 기니까 세로를 늘려서 사각형의 비율을 유지
+	else
+		glOrtho(-100 * aspectRatio, 100 * aspectRatio, -100, 100, -500, 500); // 가로가 더 기니까 가로 보는 시야를 늘려서? 사각형의 비율을 유지
+	// 여기에 작성
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+}
+
+int main(int argc, char** argv) {
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	glutInitWindowSize(500, 500);
+	glutInitWindowPosition(100, 100);
+	glutCreateWindow("simple");
+
+	SetupRC();
+	glutDisplayFunc(RenderScene);
+	glutReshapeFunc(ChangeSize);
+	glutMainLoop();
+}
