@@ -1,0 +1,71 @@
+#include <GL/glut.h>
+#include <iostream>
+#define GL_PI 3.1415f
+
+void RenderScene(void) {
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(1.0f, 0.0f, 0.0f); // 빨간색
+
+	glPushMatrix();
+
+	glEnable(GL_LINE_STIPPLE); // 점선 활성화
+	GLfloat y;
+	int factor = 10; // 점선 간격 초기값 (위는 널널하게 시작)
+
+	for (y = 90.0f; y >= -90.0f; y -= 20.0f) {
+		glLineWidth(1.0f); // 선 굵기 고정
+		glLineStipple(factor, 0x00FF); // 점선 패턴, factor 줄이면서 촘촘하게
+
+		glBegin(GL_LINES);
+		glVertex2f(-80.0f, y);
+		glVertex2f(80.0f, y);
+		glEnd();
+
+		if (factor > 1)
+			factor -= 1; // 아래로 갈수록 더 촘촘하게
+	}
+
+	glDisable(GL_LINE_STIPPLE);
+	glPopMatrix();
+
+	glutSwapBuffers();
+}
+
+void SetupRC(void) {
+	std::cout << "SetupRC" << std::endl;
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+void ChangeSize(GLsizei w, GLsizei h) {
+	std::cout << "w = " << w << " h = " << h << std::endl;
+	std::cout << "ChangeSize" << std::endl;
+
+	if (h == 0) h = 1;
+
+	GLfloat aspectRatio = (GLfloat)w / (GLfloat)h;
+
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	if (w <= h)
+		glOrtho(-100, 100, -100 / aspectRatio, 100 / aspectRatio, -500, 500);
+	else
+		glOrtho(-100 * aspectRatio, 100 * aspectRatio, -100, 100, -500, 500);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+}
+
+int main(int argc, char** argv) {
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	glutInitWindowSize(500, 500);
+	glutInitWindowPosition(100, 100);
+	glutCreateWindow("simple");
+
+	SetupRC();
+	glutDisplayFunc(RenderScene);
+	glutReshapeFunc(ChangeSize);
+	glutMainLoop();
+}
