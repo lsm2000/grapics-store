@@ -1,0 +1,62 @@
+#include <GL/glut.h>
+#include <iostream>
+
+void RenderScene(void) {
+    glClear(GL_COLOR_BUFFER_BIT);
+    glColor3f(1.0f, 0.0f, 0.0f); // 빨간색
+
+    glEnable(GL_LINE_STIPPLE); // 점선 활성화
+    glLineStipple(1, 0x00FF);  // 점선 패턴
+
+    GLfloat y = 90.0f;
+    GLfloat lineWidth = 10.0f;
+
+    for (int i = 0; i < 15; ++i) {
+        glLineWidth(lineWidth);
+        glBegin(GL_LINES);
+        glVertex2f(-80.0f, y);
+        glVertex2f(80.0f, y);
+        glEnd();
+
+        y -= 13.0f;
+        lineWidth -= 0.6f;  // 점점 가늘게
+        if (lineWidth < 1.0f) lineWidth = 1.0f; // 최소값 보장
+    }
+
+    glDisable(GL_LINE_STIPPLE);
+    glutSwapBuffers();
+}
+
+void SetupRC(void) {
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+void ChangeSize(GLsizei w, GLsizei h) {
+    if (h == 0) h = 1;
+    GLfloat aspectRatio = (GLfloat)w / (GLfloat)h;
+
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    if (w <= h)
+        glOrtho(-100.0, 100.0, -100.0 / aspectRatio, 100.0 / aspectRatio, -1.0, 1.0);
+    else
+        glOrtho(-100.0 * aspectRatio, 100.0 * aspectRatio, -100.0, 100.0, -1.0, 1.0);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("simple");
+
+    SetupRC();
+    glutDisplayFunc(RenderScene);
+    glutReshapeFunc(ChangeSize);
+    glutMainLoop();
+}
