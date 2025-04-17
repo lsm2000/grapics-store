@@ -1,0 +1,125 @@
+#include <GL/glut.h>
+#include <stdio.h>
+#include <iostream>
+#include <cmath>;
+#define GL_PI 3.1415f
+// 정면 렌더링
+void RenderScene(void) {
+	//std::cout << "Render Scene" << std::endl;
+	GLfloat x, y, z;
+	GLint Factor = 1;
+	GLushort pattern = 0x00FF;  //0000 0000 1111 1111  openGL은 반대로 되기 때문에 
+
+
+	glClear(GL_COLOR_BUFFER_BIT);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glPushMatrix();
+	//glRotatef(45, 1.0f, 0.0f, 0.0f);
+	//glRotatef(45, 0.0f, 1.0f, 0.0f);
+	
+	x = 45.0f;
+	y = 45.0f;
+	
+
+	glBegin(GL_LINES);
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex2f(0, 0);
+	glVertex2f(x-45, y+45);
+	glEnd();
+
+	glBegin(GL_LINES);
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex2f(x - 45, y + 45);
+	glVertex2f(x - 30, y +30);
+
+	glBegin(GL_LINES);
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex2f(x - 45, y + 45);
+	glVertex2f(x - 60, y + 30);
+
+	glEnd();
+
+	glBegin(GL_LINES);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex2f(0, 0);
+	glVertex2f(x+30, y);
+	glEnd();
+
+	glBegin(GL_LINES);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex2f(x + 30, y);
+	glVertex2f(x + 30, y-15);
+	glEnd();
+
+	glBegin(GL_LINES);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex2f(x + 30, y);
+	glVertex2f(x + 15, y );
+	glEnd();
+	
+	glBegin(GL_LINES);
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex2f(0, 0);
+	glVertex2f(x + 30, y - 90);
+	glEnd();
+
+	glBegin(GL_LINES);
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex2f(x + 30, y - 90);
+	glVertex2f(x + 30, y - 70);
+	glEnd();
+
+	glBegin(GL_LINES);
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex2f(x + 30, y - 90);
+	glVertex2f(x + 15, y - 90);
+	glEnd();
+	
+	glPopMatrix();
+	glutSwapBuffers();
+	glEnd();
+}
+
+
+void SetupRC(void) {
+	std::cout << "SetupRC" << std::endl;
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+}
+
+void ChangeSize(GLsizei w, GLsizei h) {
+	std::cout << "w = " << w << " " << " h = " << h << std::endl;
+	std::cout << "ChangeSize" << std::endl;
+
+	GLint wSize = 1;
+	GLfloat aspectRatio;
+
+	if (h == 0) {
+		h = 1;
+	}
+	glViewport(0, 0, w, h);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	// 여기에 작성
+	aspectRatio = (GLfloat)w / (GLfloat)h;
+	if (w <= h)
+		glOrtho(-100, 100, -100 / aspectRatio, 100 / aspectRatio, -500, 500); // 세로가 더 기니까 세로를 늘려서 사각형의 비율을 유지
+	else
+		glOrtho(-100 * aspectRatio, 100 * aspectRatio, -100, 100, -500, 500); // 가로가 더 기니까 가로 보는 시야를 늘려서? 사각형의 비율을 유지
+	// 여기에 작성
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+}
+
+int main(int argc, char** argv) {
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+	glutInitWindowSize(500, 500);
+	glutInitWindowPosition(100, 100);
+	glutCreateWindow("simple");
+
+	SetupRC();
+	glutDisplayFunc(RenderScene);
+	glutReshapeFunc(ChangeSize);
+	glutMainLoop();
+}
