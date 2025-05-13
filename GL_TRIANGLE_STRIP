@@ -24,7 +24,7 @@ void RenderScene(void) {
         glVertex2f(0.0f, 0.0f);
         glVertex2f(0.0f, 50.0f);
         glVertex2f(50.0f, 0.0f);
-        glVertex2f(50.0f, 50.0f);
+        glVertex2f(50.0f, 50.0f); //마지막에 추가된 두 점을 기준으로 삼각형을 그림
     glEnd();
 
     glutSwapBuffers();
