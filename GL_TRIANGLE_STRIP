@@ -1,0 +1,51 @@
+#include <GL/glut.h>
+#include <iostream>
+
+// 정육면체 만들기 보이지 않는 부분은 점선
+
+
+void RenderScene(void) {
+    std::cout << "RenderScene" << std::endl;
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // 투영 설정
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-200, 200, -200, 200, 200, -200);
+
+    // 모델뷰 설정
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glClear(GL_COLOR_BUFFER_BIT);
+    glBegin(GL_TRIANGLE_STRIP);
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glVertex2f(0.0f, 0.0f);
+        glVertex2f(0.0f, 50.0f);
+        glVertex2f(50.0f, 0.0f);
+        glVertex2f(50.0f, 50.0f);
+    glEnd();
+
+    glutSwapBuffers();
+    glFlush();
+}
+
+void SetupRC(void) {
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glEnable(GL_DEPTH_TEST);
+    //glShadeModel(GL_FLAT); //마지막에 적힌 색깔만 
+    glShadeModel(GL_SMOOTH); //각 점마다 색깔을 합침
+}
+
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow("Cube with Hidden Lines");
+
+    SetupRC();
+    glutDisplayFunc(RenderScene);
+    glutMainLoop();
+}
