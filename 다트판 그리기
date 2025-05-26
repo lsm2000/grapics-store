@@ -1,0 +1,93 @@
+#include <GL/glut.h>
+#include <iostream>
+#include <cmath>
+#define GL_PI 3.14
+
+bool bCull = true;
+
+void RenderScene(void) 
+{
+    if(bCull)
+        glEnable(GL_CULL_FACE);
+    else
+        glDisable(GL_CULL_FACE);
+    GLfloat x, y, angle, div = 8.0f;
+    int iPvot = 1;
+    glClear(GL_COLOR_BUFFER_BIT);
+    glPushMatrix();
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(0.0f, 0.0f);
+    for (angle = 0.0f; angle <= (2.0f * GL_PI); angle += (GL_PI / div)) 
+    {
+        x = cos(angle) * 50.0f;
+        y = sin(angle) * 50.0f;
+        if ((iPvot % 2) == 0) 
+        {
+            glColor3f(0.0f, 1.0f, 0.0f);
+        }
+        else 
+        {
+            glColor3f(1.0f, 0.0f, 0.0f);
+        }
+        iPvot++;
+        glVertex2f(x, y);
+    }
+    glEnd();
+    glPopMatrix();
+    glutSwapBuffers();
+    glFlush();
+}
+
+void SetupRC(void) 
+{
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    //glEnable(GL_DEPTH_TEST);
+    glShadeModel(GL_FLAT); //마지막에 적힌 색깔만 
+    //glEnable(GL_CULL_FACE);
+    //glShadeModel(GL_SMOOTH); //각 점마다 색깔을 합침
+}
+
+void ChangeSize(GLsizei w, GLsizei h)
+{
+    std::cout << "w = " << w << " " << " h = " << h << std::endl;
+    std::cout << "ChangeSize" << std::endl;
+
+    GLint wSize = 100;
+    GLfloat aspectRatio;
+
+    if (h == 0)
+    {
+        h = 1;
+    }
+    glViewport(0, 0, w, h);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    // 여기에 작성
+    aspectRatio = (GLfloat)w / (GLfloat)h;
+    if (w <= h)
+        glOrtho(-100, 100, -100 / aspectRatio, 100 / aspectRatio, -500, 500); // 세로가 더 기니까 세로를 늘려서 사각형의 비율을 유지
+    else
+        glOrtho(-100 * aspectRatio, 100 * aspectRatio, -100, 100, -500, 500); // 가로가 더 기니까 가로 보는 시야를 늘려서? 사각형의 비율을 유지
+    // 여기에 작성
+    /*
+    gluLookAt(0.0, 0.0, 0.0,     //카메라위치
+              0.0, 0.0, -1.0,    //바라볼 목표 지점 
+              0.0, 1.0, 0.0);    //상향벡터 
+    */
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(400, 100);
+    glutCreateWindow("Cube with Hidden Lines");
+
+    SetupRC();
+    glutDisplayFunc(RenderScene);
+    glutReshapeFunc(ChangeSize);
+    glutMainLoop();
+}
